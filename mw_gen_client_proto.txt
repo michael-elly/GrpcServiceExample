@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "Intel.FabAuto.MW.GenClient";
+package nwgenclient;
+
+service MWClientPubSubService {  
+  rpc Produce(ProduceInputData) returns (StandardOutputData) {};  
+  rpc Consume(ConsumeInputData) returns (ConsumedOutputData) {};  
+}
+service MWClientAsyncRRService {
+  rpc RequestAsync(RequestAsyncInputData) returns (StandardOutputData) {};  
+  rpc PollAsyncRespons(PollAsyncResponsInputData) returns (PollAsyncResponsOutputData) {};  
+}
+
+message ClientInfo {
+    string Name = 0; int PID = 1; string Path = 2;
+}
+message StandardOutputData {
+  bool CompletedSuccesfully = 0; int ExitCode = 1;
+  string Message = 2; // Error message or info message details  
+}
+message ProduceInputData {
+    ClientInfo Client = 0; string ProducerName = 1; string Key = 2;
+    oneof payload_oneof {
+         string InputString = 3;
+         bytes InputBytes = 4;
+    }
+}
+message ConsumeInputData {
+    ClientInfo Client = 0; string ConsumerName = 1;  int MaxMessages = 2; int WaitMs = 3;
+}
+message ConsumedOutputData {
+  enum ConsumeResult {
+    Consumed = 0;
+    TimedOut = 1;
+    Error = 2;
+  }
+  message SingleMessage { string Key = 1; bytes Value = 2; google.protobuf.Timestamp TimestampUtc = 5; int Partition = 6; int64 Offset = 7 }
+
+  ConsumeResult result = 0;
+  string StatusMessage = 2; // error message or info message details
+  repeated SingleMessage Messages = 1;  
+}
+message RequestAsyncInputData {
+    string RequestGuid = 0; ProduceInputData InputData = 1;
+}
+message PollAsyncResponsInputData {
+    ClientInfo Client = 0; string RequestGuid = 1;
+}
+message PollAsyncResponsOutputData {
+  enum PollAsyncResponsResult { Completed = 0; NotFound = 1; }
+  PollAsyncResponsResult result = 0;
+  string StatusMessage = 2; // error message or info message details
+  bytes OutputBytes = 1;
+}
