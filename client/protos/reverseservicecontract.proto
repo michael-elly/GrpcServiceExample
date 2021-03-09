@@ -5,6 +5,7 @@ option csharp_namespace = "RevService.Generated";
 package proto;
 service RevService {
   rpc Reverse(Data) returns (Data) {}
+  rpc ReverseSt(Data) returns (stream Data) {}
 }
 
 message Data {
