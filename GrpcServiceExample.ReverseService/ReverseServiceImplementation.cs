@@ -11,6 +11,7 @@ namespace GrpcServiceExample.ReverseService {
 		public override Task<Data> Reverse(Data request, ServerCallContext context) {
 			var response = new Data() { Str = new string(request.Str.Reverse().ToArray()) };
 			Console.WriteLine($" --> [{context.Host}|{context.Method}|{context.Peer}] Reverse: {request.Str} --> {response.Str}");
+			System.Threading.Thread.Sleep(500); // simulate long processing
 			//System.Threading.Thread.Sleep(5000);
 			return Task.FromResult(response);
 		}
@@ -25,6 +26,7 @@ namespace GrpcServiceExample.ReverseService {
 				await responseStream.WriteAsync(d);
 				//await responseStream.WriteAsync(new Data() { Str = new string("2") });				
 				Console.WriteLine($" --> [{context.Host}|{context.Method}|{context.Peer}] ReverseSt: {request.Str} --> {d.Str}");
+				System.Threading.Thread.Sleep(500); // simulate long processing
 			}
 		}
 	}
