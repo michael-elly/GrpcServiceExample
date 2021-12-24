@@ -18,8 +18,10 @@ namespace GrpcServiceExample.ReverseService {
 		public override async Task ReverseSt(Data request, IServerStreamWriter<Data> responseStream, ServerCallContext context) {
 			//return base.ReverseSt(request, responseStream, context);
 			string s = request.Str;
-			for (int i = s.Length-1; i >= 0; i--) {
-				Data d = new Data() { Str = s.Substring(i, 1) };
+			if (s.Length < 2) s.PadRight(2); // make sure we have at least 2 chars
+			if (s.Length % 2 == 1) s += " "; // make sure we have even # of chars
+			for (int i = s.Length-2; i >= 0; i-=2) {
+				Data d = new Data() { Str = s.Substring(i, 2) };
 				await responseStream.WriteAsync(d);
 				//await responseStream.WriteAsync(new Data() { Str = new string("2") });				
 				Console.WriteLine($" --> [{context.Host}|{context.Method}|{context.Peer}] ReverseSt: {request.Str} --> {d.Str}");

@@ -44,7 +44,7 @@ namespace client {
 
 			// Prepare stream read
 			using (var search = client.ReverseSt(data)) {
-				Console.WriteLine("Printing out stream of found contacts");
+				Console.WriteLine("Printing stream segments as they are being sent by the server...");
 
 				try {
 					// Waiting for stream elements
